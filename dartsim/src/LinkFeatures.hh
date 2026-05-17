@@ -26,26 +26,29 @@ namespace gz {
 namespace physics {
 namespace dartsim {
 
-struct LinkFeatureList : FeatureList<
-  AddLinkExternalForceTorque
-> { };
+struct LinkFeatureList
+    : FeatureList<AddLinkExternalForceTorque, SetLinkInertial> {};
 
-class LinkFeatures :
-    public virtual Base,
-    public virtual Implements3d<LinkFeatureList>
-{
+class LinkFeatures : public virtual Base,
+                     public virtual Implements3d<LinkFeatureList> {
   // ----- Add Link Force/Torque -----
-  public: void AddLinkExternalForceInWorld(
-      const Identity &_id,
-      const LinearVectorType &_force,
-      const LinearVectorType &_position) override;
+public:
+  void AddLinkExternalForceInWorld(const Identity &_id,
+                                   const LinearVectorType &_force,
+                                   const LinearVectorType &_position) override;
 
-  public: void AddLinkExternalTorqueInWorld(
-      const Identity &_id, const AngularVectorType &_torque) override;
+public:
+  void AddLinkExternalTorqueInWorld(const Identity &_id,
+                                    const AngularVectorType &_torque) override;
+
+  // ----- Set Link Inertial -----
+public:
+  void SetLinkInertial(const Identity &_id,
+                       const gz::math::Inertial<double> &_inertial) override;
 };
 
-}
-}
-}
+} // namespace dartsim
+} // namespace physics
+} // namespace gz
 
 #endif

@@ -18,6 +18,8 @@
 #include <dart/dynamics/BodyNode.hpp>
 #include <dart/dynamics/FreeJoint.hpp>
 
+#include <gz/math/eigen3/Conversions.hh>
+
 #include "LinkFeatures.hh"
 
 namespace gz {
@@ -27,20 +29,33 @@ namespace dartsim {
 /////////////////////////////////////////////////
 void LinkFeatures::AddLinkExternalForceInWorld(
     const Identity &_id, const LinearVectorType &_force,
-    const LinearVectorType &_position)
-{
+    const LinearVectorType &_position) {
   auto bn = this->ReferenceInterface<LinkInfo>(_id)->link;
   bn->addExtForce(_force, _position, false, false);
 }
 
 /////////////////////////////////////////////////
 void LinkFeatures::AddLinkExternalTorqueInWorld(
-    const Identity &_id, const AngularVectorType &_torque)
-{
+    const Identity &_id, const AngularVectorType &_torque) {
   auto bn = this->ReferenceInterface<LinkInfo>(_id)->link;
   bn->addExtTorque(_torque, false);
 }
 
+/////////////////////////////////////////////////
+void LinkFeatures::SetLinkInertial(
+    const Identity &_id, const gz::math::Inertial<double> &_inertial) {
+  auto bn = this->ReferenceInterface<LinkInfo>(_id)->link;
+
+  const double mass = _inertial.MassMatrix().Mass();
+  const gz::math::Matrix3d &moi = _inertial.Moi();
+  const gz::math::Vector3d &com = _inertial.Pose().Pos();
+
+  bn->setMass(mass);
+  bn->setMomentOfInertia(moi(0, 0), moi(1, 1), moi(2, 2), moi(0, 1), moi(0, 2),
+                         moi(1, 2));
+  bn->setLocalCOM(math::eigen3::convert(com));
 }
-}
-}
+
+} // namespace dartsim
+} // namespace physics
+} // namespace gz

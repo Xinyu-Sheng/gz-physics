@@ -19,18 +19,15 @@
 #define GZ_PHYSICS_DETAIL_LINK_HH_
 
 #include <gz/physics/Link.hh>
-#include <gz/physics/RequestEngine.hh>
 #include <gz/physics/RelativeQuantity.hh>
+#include <gz/physics/RequestEngine.hh>
 
-namespace gz
-{
-namespace physics
-{
+namespace gz {
+namespace physics {
 /////////////////////////////////////////////////
 template <typename PolicyT, typename FeaturesT>
 void AddLinkExternalForceTorque::Link<PolicyT, FeaturesT>::AddExternalForce(
-    const RelativeForceType &_force, const RelativePositionType &_position)
-{
+    const RelativeForceType &_force, const RelativePositionType &_position) {
   const auto &impl = *this->template Interface<FrameSemantics>();
   const auto forceWorld =
       detail::Resolve(impl, _force, FrameID::World(), FrameID::World());
@@ -44,13 +41,11 @@ void AddLinkExternalForceTorque::Link<PolicyT, FeaturesT>::AddExternalForce(
 template <typename PolicyT, typename FeaturesT>
 void AddLinkExternalForceTorque::Link<PolicyT, FeaturesT>::AddExternalForce(
     const LinearVectorType &_force, const FrameID &_forceInCoordinatesOf,
-    const LinearVectorType &_position)
-{
+    const LinearVectorType &_position) {
   const auto &impl = *this->template Interface<FrameSemantics>();
   // Special case for world coordinates
   auto forceWorld = _force;
-  if (_forceInCoordinatesOf != FrameID::World())
-  {
+  if (_forceInCoordinatesOf != FrameID::World()) {
     RelativeForceType forceInRef(_forceInCoordinatesOf, _force);
     forceWorld =
         detail::Resolve(impl, forceInRef, FrameID::World(), FrameID::World());
@@ -67,8 +62,7 @@ void AddLinkExternalForceTorque::Link<PolicyT, FeaturesT>::AddExternalForce(
 /////////////////////////////////////////////////
 template <typename PolicyT, typename FeaturesT>
 void AddLinkExternalForceTorque::Link<PolicyT, FeaturesT>::AddExternalTorque(
-    const RelativeTorqueType &_torque)
-{
+    const RelativeTorqueType &_torque) {
   const auto &impl = *this->template Interface<FrameSemantics>();
   const auto torqueWorld =
       detail::Resolve(impl, _torque, FrameID::World(), FrameID::World());
@@ -80,13 +74,11 @@ void AddLinkExternalForceTorque::Link<PolicyT, FeaturesT>::AddExternalTorque(
 /////////////////////////////////////////////////
 template <typename PolicyT, typename FeaturesT>
 void AddLinkExternalForceTorque::Link<PolicyT, FeaturesT>::AddExternalTorque(
-    const AngularVectorType &_torque, const FrameID &_inCoordinatesOf)
-{
+    const AngularVectorType &_torque, const FrameID &_inCoordinatesOf) {
   const auto &impl = *this->template Interface<FrameSemantics>();
   // Special case for world coordinates
   auto torqueWorld = _torque;
-  if (_inCoordinatesOf != FrameID::World())
-  {
+  if (_inCoordinatesOf != FrameID::World()) {
     RelativeTorqueType torqueInRef(_inCoordinatesOf, _torque);
     torqueWorld =
         detail::Resolve(impl, torqueInRef, FrameID::World(), FrameID::World());
@@ -96,7 +88,15 @@ void AddLinkExternalForceTorque::Link<PolicyT, FeaturesT>::AddExternalTorque(
       ->AddLinkExternalTorqueInWorld(this->identity, torqueWorld);
 }
 
-}  // namespace physics
-}  // namespace gz
+/////////////////////////////////////////////////
+template <typename PolicyT, typename FeaturesT>
+void SetLinkInertial::Link<PolicyT, FeaturesT>::SetInertial(
+    const gz::math::Inertial<Scalar> &_inertial) {
+  this->template Interface<SetLinkInertial>()->SetLinkInertial(this->identity,
+                                                               _inertial);
+}
+
+} // namespace physics
+} // namespace gz
 
 #endif
